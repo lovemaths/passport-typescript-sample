@@ -7,7 +7,7 @@ import * as bodyParser from "body-parser";
 import * as logger from "morgan";
 import * as errorHandler from "errorhandler";
 import * as passport from "passport";
-import * as something from "passport-azure-ad";
+import * as AADStrategy from "passport-azure-ad";
 import * as path from "path";
 
 /**

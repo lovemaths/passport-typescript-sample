@@ -1,41 +1,50 @@
-/// <reference types="passport"/>
+import passport = require('passport');
+import express = require('express');
 
-import passport = require("passport");
-import express = require("express");
+export interface Profile extends passport.Profile {
+    id: string;
+    displayName: string;
+    gender?: string;
+    ageRange?: {
+        min: number;
+        max?: number;
+    };
+    profileUrl?: string;
+    username?: string;
+    birthday: string;
 
-interface IStrategyOptions {
-    usernameField?: string;
-    passwordField?: string;
-    passReqToCallback?: boolean;
+    _raw: string;
+    _json: any;
 }
 
-interface IStrategyOptionsWithRequest {
-    usernameField?: string;
-    passwordField?: string;
-    passReqToCallback: boolean;
+export interface AuthenticateOptions extends passport.AuthenticateOptions {
+    authType?: string;
 }
 
-interface IVerifyOptions {
-    message: string;
+export interface StrategyOption {
+    clientID: string;
+    clientSecret: string;
+    callbackURL: string;
+
+    scopeSeparator?: string;
+    enableProof?: boolean;
+    profileFields?: string[];
 }
 
-interface VerifyFunctionWithRequest {
-    (req: express.Request, username: string, password: string, done: (error: any, user?: any, options?: IVerifyOptions) => void): void;
+export interface StrategyOptionWithRequest extends StrategyOption {
+    passReqToCallback: true;
 }
 
-interface VerifyFunction {
-    (username: string, password: string, done: (error: any, user?: any, options?: IVerifyOptions) => void): void;
-}
+export type VerifyFunction =
+    (accessToken: string, refreshToken: string, profile: Profile, done: (error: any, user?: any, info?: any) => void) => void;
 
-export declare class Strategy implements passport.Strategy {
-    constructor(options: IStrategyOptionsWithRequest, verify: VerifyFunctionWithRequest);
-    constructor(options: IStrategyOptions, verify: VerifyFunction);
-    constructor(verify: VerifyFunction);
+export type VerifyFunctionWithRequest =
+    (req: express.Request, accessToken: string, refreshToken: string, profile: Profile, done: (error: any, user?: any, info?: any) => void) => void;
+
+export class OidcStrategy implements passport.Strategy {
+    constructor(options: StrategyOptionWithRequest, verify: VerifyFunctionWithRequest);
+    constructor(options: StrategyOption, verify: VerifyFunction);
 
     name: string;
-    authenticate: (req: express.Request, options?: Object) => void;
-}
-
-interface LocalStrategyInfo {
-    message: string;
+    authenticate: (req: express.Request, options?: object) => void;
 }
